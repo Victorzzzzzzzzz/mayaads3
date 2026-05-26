@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoinW 聪明钱 Ad 3 - Cyberpunk</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0d0d0d;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Noto Sans SC',sans-serif;}
+.frame{width:393px;height:852px;background:#000;border-radius:48px;overflow:hidden;position:relative;border:1.5px solid #1a0000;box-shadow:0 0 60px rgba(255,30,30,0.12),0 40px 80px rgba(0,0,0,0.9);}
+.ad{width:100%;height:100%;position:relative;overflow:hidden;background:#050000;}
+
+/* CRT scanlines overlay */
+.crt{position:absolute;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);}
+.crt2{position:absolute;inset:0;pointer-events:none;z-index:49;animation:crtFlicker 8s infinite;}
+@keyframes crtFlicker{0%,96%,100%{opacity:1;}97%{opacity:0.92;}98%{opacity:1;}99%{opacity:0.95;}}
+
+/* Scenes */
+.scene{position:absolute;inset:0;opacity:0;transition:opacity 0.3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;}
+.scene.on{opacity:1;}
+
+/* ─── SCENE 1: BOOT SEQUENCE ─── */
+.s1{background:#000;font-family:'Share Tech Mono',monospace;}
+.terminal{width:100%;padding:0 8px;}
+.t-line{font-size:13px;color:#ff2020;margin:3px 0;opacity:0;white-space:nowrap;overflow:hidden;width:0;}
+.t-line.typed{animation:typeIn 0.5s forwards;}
+@keyframes typeIn{0%{opacity:1;width:0;}100%{opacity:1;width:100%;}}
+.t-line.fast{animation:typeIn 0.2s forwards;}
+.t-line.blink-cursor::after{content:'█';animation:blink 0.6s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.t-green{color:#00ff41;}
+.t-white{color:#ddd;}
+.t-dim{color:#555;}
+.warning-box{margin-top:24px;border:1px solid #ff2020;padding:16px;border-radius:4px;position:relative;width:100%;opacity:0;transition:opacity 0.4s;}
+.warning-box.show{opacity:1;}
+.warning-box::before{content:'! ALERT';position:absolute;top:-10px;left:16px;background:#000;padding:0 8px;font-size:11px;color:#ff2020;font-family:'Share Tech Mono',monospace;letter-spacing:2px;}
+.alert-txt{font-family:'Share Tech Mono',monospace;font-size:15px;color:#ff2020;text-align:center;line-height:1.6;}
+.alert-txt strong{font-size:22px;color:#fff;display:block;margin:8px 0;}
+
+/* ─── SCENE 2: CHART EXPLOSION ─── */
+.s2{background:#050000;flex-direction:column;}
+.chart-area{width:100%;height:200px;position:relative;margin-bottom:24px;}
+canvas#chartCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.chart-label-left{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:11px;color:#ff2020;font-family:'Share Tech Mono',monospace;letter-spacing:1px;writing-mode:vertical-lr;transform:translateY(-50%) rotate(180deg);}
+.profit-counter{text-align:center;margin-bottom:12px;}
+.profit-counter .p-label{font-size:12px;color:#555;font-family:'Share Tech Mono',monospace;letter-spacing:3px;margin-bottom:4px;}
+.profit-counter .p-num{font-family:'Share Tech Mono',monospace;font-size:72px;color:#ff2020;line-height:1;letter-spacing:-2px;}
+.profit-counter .p-num span{color:#fff;font-size:40px;}
+.signal-row{display:flex;gap:10px;width:100%;}
+.signal-card{flex:1;border:1px solid rgba(255,32,32,0.25);border-radius:6px;padding:12px;text-align:center;position:relative;overflow:hidden;}
+.signal-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:1px;background:linear-gradient(90deg,transparent,#ff2020,transparent);animation:scanH 2.5s linear infinite;}
+@keyframes scanH{0%{left:-100%;}100%{left:100%;}}
+.signal-card .sc-val{font-family:'Share Tech Mono',monospace;font-size:26px;color:#ff2020;font-weight:700;}
+.signal-card .sc-lbl{font-size:11px;color:#555;margin-top:2px;letter-spacing:1px;}
+
+/* ─── SCENE 3: GLITCH REVEAL ─── */
+.s3{background:#000;overflow:hidden;}
+.glitch-wrap{position:relative;text-align:center;margin-bottom:32px;}
+.glitch-main{font-family:'Share Tech Mono',monospace;font-size:56px;color:#ff2020;line-height:1;display:block;position:relative;}
+.glitch-main::before,.glitch-main::after{content:attr(data-text);position:absolute;top:0;left:0;right:0;}
+.glitch-main::before{color:#0ff;clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);animation:glitchA 3s infinite;opacity:0.7;}
+.glitch-main::after{color:#ff2020;clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%);animation:glitchB 2.7s infinite;opacity:0.5;}
+@keyframes glitchA{0%,90%,100%{transform:translate(0);}91%{transform:translate(-3px,1px);}93%{transform:translate(3px,-1px);}95%{transform:translate(-2px,0);}}
+@keyframes glitchB{0%,88%,100%{transform:translate(0);}89%{transform:translate(2px,2px);}91%{transform:translate(-2px,-1px);}93%{transform:translate(1px,0);}}
+.glitch-sub{font-family:'Share Tech Mono',monospace;font-size:16px;color:#555;letter-spacing:4px;display:block;margin-top:8px;}
+.feature-grid{display:flex;flex-direction:column;gap:10px;width:100%;}
+.fg-row{display:flex;align-items:center;gap:14px;padding:13px 16px;border-left:3px solid #ff2020;background:rgba(255,32,32,0.04);border-radius:0 8px 8px 0;}
+.fg-icon{font-family:'Share Tech Mono',monospace;font-size:18px;color:#ff2020;min-width:28px;text-align:center;}
+.fg-text .fg-t{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;}
+.fg-text .fg-s{font-size:12px;color:#555;font-family:'Share Tech Mono',monospace;}
+
+/* ─── SCENE 4: FINAL CTA ─── */
+.s4{background:#ff2020;padding:32px 24px;}
+.cta-eyebrow{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(0,0,0,0.5);letter-spacing:4px;margin-bottom:20px;}
+.cta-hero{font-family:'Share Tech Mono',monospace;font-size:64px;color:#000;line-height:0.9;text-align:center;margin-bottom:24px;}
+.cta-stats{display:flex;gap:16px;margin-bottom:32px;width:100%;}
+.cta-stat{flex:1;background:rgba(0,0,0,0.1);border-radius:8px;padding:14px;text-align:center;}
+.cta-stat .cs-n{font-family:'Share Tech Mono',monospace;font-size:30px;color:#000;font-weight:700;}
+.cta-stat .cs-l{font-size:11px;color:rgba(0,0,0,0.5);margin-top:2px;}
+.cta-btn-wrap{width:100%;}
+.cta-main-btn{width:100%;background:#000;color:#ff2020;font-family:'Share Tech Mono',monospace;font-size:18px;padding:20px;border-radius:8px;text-align:center;letter-spacing:3px;cursor:pointer;border:none;display:block;position:relative;overflow:hidden;}
+.cta-main-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.1);transform:translateX(-100%);transition:transform 0.3s ease;}
+.cta-main-btn:hover::after{transform:translateX(0);}
+.cta-footer{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,0,0,0.4);margin-top:20px;letter-spacing:2px;}
+
+/* Progress + Dots */
+.nav-dots{position:absolute;top:26px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100;}
+.nd{width:20px;height:3px;background:rgba(255,32,32,0.25);border-radius:2px;transition:all 0.3s;}
+.nd.on{background:#ff2020;width:32px;}
+.prog{position:absolute;bottom:0;left:0;height:3px;background:#ff2020;width:0%;z-index:100;}
+
+/* Red corner decor */
+.corner-tl,.corner-br{position:absolute;width:20px;height:20px;z-index:20;pointer-events:none;}
+.corner-tl{top:60px;left:20px;border-top:1px solid #ff2020;border-left:1px solid #ff2020;}
+.corner-br{bottom:20px;right:20px;border-bottom:1px solid #ff2020;border-right:1px solid #ff2020;}
+
+/* Sound toggle */
+.sound-btn{position:absolute;top:60px;right:20px;z-index:200;background:rgba(255,32,32,0.1);border:1px solid rgba(255,32,32,0.3);color:#ff2020;font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="frame">
+<div class="ad">
+  <div class="crt"></div>
+  <div class="crt2"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <button class="sound-btn" id="sndBtn">♪ ON</button>
+
+  <div class="nav-dots">
+    <div class="nd on" id="nd0"></div>
+    <div class="nd" id="nd1"></div>
+    <div class="nd" id="nd2"></div>
+    <div class="nd" id="nd3"></div>
+  </div>
+
+  <!-- SCENE 1: Terminal Boot -->
+  <div class="scene s1 on" id="sc0">
+    <div class="terminal">
+      <div class="t-line t-dim" id="tl0">// COINW SMART_MONEY v2.1</div>
+      <div class="t-line t-dim" id="tl1">// SCANNING CHAIN DATA...</div>
+      <div class="t-line t-green" id="tl2">> WHALE_DETECTED: 0x7f3a...d9e1</div>
+      <div class="t-line t-green" id="tl3">> PROFIT_RATE: +2748.3%</div>
+      <div class="t-line t-green" id="tl4">> COPY_AVAILABLE: TRUE</div>
+      <div class="t-line t-white" id="tl5">> FEE: 0.000%</div>
+      <div class="t-line t-dim" id="tl6">——————————————</div>
+      <div class="t-line t-green" id="tl7">> STATUS: READY</div>
+    </div>
+    <div class="warning-box" id="warnBox">
+      <div class="alert-txt">
+        别的交易所<br>
+        <strong>看不到这些数据</strong>
+        只有 CoinW 直连链上
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 2: Chart -->
+  <div class="scene s2" id="sc1">
+    <div class="profit-counter">
+      <div class="p-label">// WHALE_PROFIT_RATE</div>
+      <div class="p-num"><span>+</span><span id="counterNum">0</span><span>%</span></div>
+    </div>
+    <div class="chart-area">
+      <canvas id="chartCanvas"></canvas>
+    </div>
+    <div class="signal-row">
+      <div class="signal-card">
+        <div class="sc-val">0%</div>
+        <div class="sc-lbl">分润费用</div>
+      </div>
+      <div class="signal-card">
+        <div class="sc-val">1键</div>
+        <div class="sc-lbl">跟单操作</div>
+      </div>
+      <div class="signal-card">
+        <div class="sc-val">100%</div>
+        <div class="sc-lbl">收益归你</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3: Features -->
+  <div class="scene s3" id="sc2">
+    <div class="glitch-wrap">
+      <span class="glitch-main" data-text="聪明钱">聪明钱</span>
+      <span class="glitch-sub">SMART MONEY</span>
+    </div>
+    <div class="feature-grid">
+      <div class="fg-row" id="fg1">
+        <div class="fg-icon">[W]</div>
+        <div class="fg-text">
+          <div class="fg-t">链上巨鲸，直接跟</div>
+          <div class="fg-s">别的交易所做不到</div>
+        </div>
+      </div>
+      <div class="fg-row" id="fg2">
+        <div class="fg-icon">[=]</div>
+        <div class="fg-text">
+          <div class="fg-t">收益率完全复制</div>
+          <div class="fg-s">巨鲸赚多少你赚多少</div>
+        </div>
+      </div>
+      <div class="fg-row" id="fg3">
+        <div class="fg-icon">[$]</div>
+        <div class="fg-text">
+          <div class="fg-t">0 分润，全归自己</div>
+          <div class="fg-s">带单员不能抽你的钱</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4: CTA -->
+  <div class="scene s4" id="sc3">
+    <div class="cta-eyebrow">// EXECUTE_COPY_TRADE</div>
+    <div class="cta-hero">跟单<br>巨鲸</div>
+    <div class="cta-stats">
+      <div class="cta-stat">
+        <div class="cs-n">+2748%</div>
+        <div class="cs-l">最高收益率</div>
+      </div>
+      <div class="cta-stat">
+        <div class="cs-n">0%</div>
+        <div class="cs-l">分润费</div>
+      </div>
+    </div>
+    <div class="cta-btn-wrap">
+      <div class="cta-main-btn">[ 立即开启跟单 ]</div>
+    </div>
+    <div class="cta-footer">coinw.com · SMART_MONEY · ON-CHAIN</div>
+  </div>
+
+  <div class="prog" id="prog"></div>
+</div>
+</div>
+
+<script>
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+let soundOn = true;
+let audioStarted = false;
+
+document.getElementById('sndBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  soundOn = !soundOn;
+  document.getElementById('sndBtn').textContent = soundOn ? '♪ ON' : '♪ OFF';
+});
+
+function initAudio() {
+  if (!ctx) ctx = new AC();
+  audioStarted = true;
+}
+
+function playBeep(freq, dur, vol, type) {
+  if (!soundOn || !ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = type || 'square';
+  o.frequency.setValueAtTime(freq, ctx.currentTime);
+  g.gain.setValueAtTime(vol||0.08, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+  o.start(); o.stop(ctx.currentTime + dur);
+}
+
+function playTypeSound() {
+  if (!soundOn || !ctx) return;
+  const freqs = [800,900,700,1000,600,1100];
+  freqs.forEach((f,i) => setTimeout(() => playBeep(f, 0.04, 0.05, 'square'), i*60));
+}
+
+function playAlertSound() {
+  if (!soundOn || !ctx) return;
+  [440,880,440,660].forEach((f,i) => setTimeout(() => playBeep(f, 0.15, 0.1, 'sawtooth'), i*120));
+}
+
+function playChartSound() {
+  if (!soundOn || !ctx) return;
+  const notes = [300,350,400,500,600,800,1000,1200];
+  notes.forEach((f,i) => setTimeout(() => playBeep(f, 0.12, 0.07, 'sine'), i*80));
+}
+
+function playCTASound() {
+  if (!soundOn || !ctx) return;
+  [523,659,784,1047].forEach((f,i) => setTimeout(() => playBeep(f, 0.3, 0.1, 'sine'), i*100));
+}
+
+function playGlitchSound() {
+  if (!soundOn || !ctx) return;
+  [200,400,100,300,500].forEach((f,i) => setTimeout(() => playBeep(f, 0.06, 0.06, 'sawtooth'), i*40));
+}
+
+const SCENES = ['sc0','sc1','sc2','sc3'];
+const DOTS = ['nd0','nd1','nd2','nd3'];
+const DURATION = 4500;
+let cur = 0, startT = Date.now();
+
+function animateTerminal() {
+  const lines = ['tl0','tl1','tl2','tl3','tl4','tl5','tl6','tl7'];
+  lines.forEach((id,i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      el.classList.add('typed');
+      if (i < 3) playTypeSound();
+    }, i * 280);
+  });
+  setTimeout(() => {
+    document.getElementById('warnBox').classList.add('show');
+    playAlertSound();
+  }, 2400);
+}
+
+function animateCounter() {
+  playChartSound();
+  const target = 2748;
+  const dur = 1800;
+  const start = Date.now();
+  const el = document.getElementById('counterNum');
+  const tick = () => {
+    const p = Math.min((Date.now()-start)/dur, 1);
+    const ease = 1-Math.pow(1-p, 3);
+    el.textContent = Math.round(ease * target);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(tick);
+
+  const cv = document.getElementById('chartCanvas');
+  const cw = cv.width = cv.offsetWidth * 2;
+  const ch = cv.height = cv.offsetHeight * 2;
+  const c = cv.getContext('2d');
+  const pts = [0.85,0.78,0.82,0.70,0.65,0.72,0.60,0.50,0.40,0.28,0.15,0.08,0.02];
+  const drawChart = (progress) => {
+    c.clearRect(0,0,cw,ch);
+    const n = Math.max(2, Math.floor(progress * pts.length));
+    c.beginPath();
+    pts.slice(0,n).forEach((v,i) => {
+      const x = (i/(pts.length-1))*cw;
+      const y = ch*0.1 + v*(ch*0.8);
+      i===0 ? c.moveTo(x,y) : c.lineTo(x,y);
+    });
+    c.strokeStyle = '#ff2020'; c.lineWidth = 3; c.stroke();
+    c.lineTo((n-1)/(pts.length-1)*cw, ch);
+    c.lineTo(0, ch);
+    c.fillStyle = 'rgba(255,32,32,0.07)'; c.fill();
+    // Draw last point dot
+    const lx = ((n-1)/(pts.length-1))*cw;
+    const ly = ch*0.1 + pts[n-1]*(ch*0.8);
+    c.beginPath(); c.arc(lx,ly,8,0,Math.PI*2);
+    c.fillStyle='#ff2020'; c.fill();
+    if (progress < 1) requestAnimationFrame(() => drawChart(Math.min(1, progress+0.025)));
+  };
+  drawChart(0.1);
+}
+
+function animateFeatures() {
+  playGlitchSound();
+  ['fg1','fg2','fg3'].forEach((id,i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.4s, transform 0.4s';
+      el.style.transform = 'translateX(-20px)';
+      setTimeout(() => { el.style.opacity='1'; el.style.transform='translateX(0)'; }, 50);
+    }, i*350 + 200);
+  });
+}
+
+function showScene(idx) {
+  SCENES.forEach((s,i) => {
+    const el = document.getElementById(s);
+    el.classList.toggle('on', i===idx);
+  });
+  DOTS.forEach((d,i) => document.getElementById(d).classList.toggle('on', i===idx));
+  cur = idx; startT = Date.now();
+  if (idx===0) animateTerminal();
+  if (idx===1) animateCounter();
+  if (idx===2) animateFeatures();
+  if (idx===3) playCTASound();
+}
+
+(function progLoop(){
+  const p = Math.min((Date.now()-startT)/DURATION*100, 100);
+  document.getElementById('prog').style.width = p+'%';
+  requestAnimationFrame(progLoop);
+})();
+
+setInterval(() => showScene((cur+1)%4), DURATION);
+
+document.querySelector('.frame').addEventListener('click', () => {
+  if (!audioStarted) initAudio();
+  showScene((cur+1)%4);
+});
+
+animateTerminal();
+</script>
+</body>
+</html>
